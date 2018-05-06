@@ -1,0 +1,32 @@
+<html>
+<head>
+
+</head>
+<body>
+  <h3>Interviw Phase 2</h3>
+<form id="mm" method='get' action='{{url_for("CalUsingPostgres")}}'>
+ Latitude<input id="latitude" type="integer" name='latitude'>
+ Longitude<input id="longitude" type="integer" name='longitude'>
+ Radius<input  type="integer" id="radius" name='radius'>
+ <br>
+<button id='calbypostgres' type="submit">Calculate Using Postgres</button>
+</form>
+<form id="mm" method='get' action='{{url_for("CalUsingMath")}}'>
+ Latitude<input id="lat" type="integer" name='latitude'>
+ Longitude<input id="lng" type="integer" name='longitude'>
+ Radius<input  type="integer" id="rad" name='radius'>
+ <br>
+<button type="submit">Calculate Using Mathematical Functions</button>
+</form>
+
+<h3>Interview Phase 3</h3>
+<form method='post' action="{{url_for('LocationRadius')}}">
+  <h3> Find position from Geojson data</h3>
+  Latitude:<input type="integer" name="latitude">
+  Longitude:<input type="integer" name="longitude">
+  <button type='submit'>Find Location</button>
+</form>
+
+
+</body>
+</html>
