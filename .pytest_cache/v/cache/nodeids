@@ -1,4 +1,0 @@
-[
-  "sample_test.py::FlaskTestCase::test_index",
-  "test_pincode.py::test_locationsAPI"
-]
