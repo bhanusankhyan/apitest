@@ -1,0 +1,5 @@
+{
+  "test_pincode.py::test": true,
+  "test_pincode.py::test_clinet": true,
+  "test_pincode.py::test_locationsAPI": true
+}

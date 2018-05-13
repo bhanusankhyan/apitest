@@ -23,7 +23,6 @@ def locationsAPI():
       location['key'] = "IN/"+location['key']
       k = location['key']
       key = session.query(Data).filter_by(key=k).first()
-      print(key)
       locations = session.query(Data).filter_by(latitude = location['latitude']).filter_by(longitude=location['longitude']).first()
       if key != None:
           return jsonify(result = "Pin code Already Exists")
@@ -36,7 +35,7 @@ def locationsAPI():
       return jsonify(result = "success!")
     except:
         session.rollback()
-        return jsonify(result = "Failure")
+        return jsonify(result = "failure")
 
                #Interview Part-2 and Part-3
 
@@ -46,13 +45,9 @@ def LocationRadius():
         return render_template('location.html')
     if request.method == 'POST':
       try:
-        print('hello')
         lat = request.form['latitude']
-        print(lat)
         lng = request.form['longitude']
-        print(lng)
         loc =session.execute("select * from geojson where latitude::TEXT like '{:s}%' and longitude::TEXT like '{:s}%';".format(lat,lng)).first()
-        print(loc.parent)
         return jsonify (city = loc['city_name'], parent = loc.parent,latitude=lat,longitude=lng)
       except:
          return jsonify(result="Location does not exist in database")
@@ -63,14 +58,11 @@ def CalUsingPostgres():
     if request.method == 'GET':
         lat = float(request.args.get("latitude"))
         lng = float(request.args.get("longitude"))
-        print(lat,lng)
         rad = int(request.args.get("radius"))
         radius = rad*1000
         content = session.execute('select key,earth_distance(ll_to_earth({:f},{:f}),ll_to_earth(latitude,longitude)) as distance from locations where earth_box(ll_to_earth({:f},{:f}),{:d}) @> ll_to_earth(latitude,longitude);'.format(lat,lng,lat,lng,radius))
         distance= {}
         for c in content:
-            print (c.key)
-            print(c.distance)
             distance.update({c.key:c.distance})
         return jsonify(result=distance)
 
@@ -82,12 +74,10 @@ def CalUsingMath():
         rad = int(request.args.get('radius'))
         radius = rad*1000;
         distance = {}
-        print(radius)
         part1 = session.execute('create view distance as select key,(6371e3*(2* atan2(sqrt(sin(((latitude-{:f})*0.01745329252)/2)*sin(((latitude-{:f})*0.01745329252)/2)+cos({:f}*0.01745329252)*cos(latitude*0.01745329252)*sin(((longitude-{:f})*0.01745329252)/2)*sin(((longitude-{:f})*0.01745329252)/2)),sqrt(1-(sin(((latitude-{:f})*0.01745329252)/2)*sin(((latitude-{:f})*0.01745329252)/2)+cos({:f}*0.01745329252)*cos(latitude*0.01745329252)*sin(((longitude-{:f})*0.01745329252)/2)*sin(((longitude-{:f})*0.01745329252)/2)))))) as distance from locations; '.format(lat,lat,lat,lng,lng,lat,lat,lat,lng,lng))
         cont = session.execute("select * from distance where distance <= {:f};".format(radius))
         part2 = session.execute("drop view distance;")
         for c in cont:
-            print (c)
             distance.update({c.key:c.distance})
         return jsonify(result = distance)
 
